@@ -26,7 +26,7 @@ func Testreceive(t *testing.T) {
 	)
 	ylog.InitLogger(logger)
 	InitNats()
-	sub, err := js.PullSubscribe(subjectRawData, durableName)
+	sub, err := Js.PullSubscribe(SubjectRawData, DurableName)
 	if err != nil {
 		log.Fatal(err)
 	}

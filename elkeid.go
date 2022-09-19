@@ -28,10 +28,10 @@ var (
 )
 
 const (
-	connName       = "Elkeid"
-	streamName     = "Elkeid"
-	durableName    = "Elkeid"
-	subjectRawData = "rawdata"
+	ConnName       = "Elkeid"
+	StreamName     = "Elkeid"
+	DurableName    = "Elkeid"
+	SubjectRawData = "rawdata"
 )
 
 // PBSerialize
@@ -49,7 +49,7 @@ func SendPBWithKey(key string, msg *pb.MQData) {
 		ylog.Errorf("Nats", "SendPBWithKey Error %s", err.Error())
 		return
 	}
-	_, err = js.Publish(subjectRawData, b)
+	_, err = Js.Publish(SubjectRawData, b)
 	if err != nil {
 		ylog.Infof("Nats", "SendPBWithKey error: %s", err.Error())
 	}
@@ -57,27 +57,27 @@ func SendPBWithKey(key string, msg *pb.MQData) {
 }
 
 var (
-	js nats.JetStreamContext
+	Js nats.JetStreamContext
 )
 
 func InitNats() {
-	nc := NewNc(connName)
-	js, _ = nc.JetStream()
+	nc := NewNc(ConnName)
+	Js, _ = nc.JetStream()
 	// Create a stream
 	natsmqStreamConfig := nats.StreamConfig{
-		Name:     streamName,
-		Subjects: []string{subjectRawData},
+		Name:     StreamName,
+		Subjects: []string{SubjectRawData},
 	}
 
-	err := createStream(js, &natsmqStreamConfig)
+	err := createStream(Js, &natsmqStreamConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
 	natsmqConsumerConfig := nats.ConsumerConfig{
-		Durable:   durableName,
+		Durable:   DurableName,
 		AckPolicy: nats.AckExplicitPolicy,
 	}
-	err = createConsumer(js, streamName, durableName, &natsmqConsumerConfig)
+	err = createConsumer(Js, StreamName, DurableName, &natsmqConsumerConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -87,7 +87,7 @@ func InitNats() {
 func NewNc(connName string) *nats.Conn {
 	// Connect Options.
 	opts := []nats.Option{}
-	opts = append(opts, nats.Name(connName))
+	opts = append(opts, nats.Name(ConnName))
 
 	// Connect to NATS
 	nc, err := nats.Connect(nats.DefaultURL, opts...)
@@ -110,7 +110,7 @@ func receive() {
 	)
 	ylog.InitLogger(logger)
 	InitNats()
-	sub, err := js.PullSubscribe(subjectRawData, durableName)
+	sub, err := Js.PullSubscribe(SubjectRawData, DurableName)
 	if err != nil {
 		log.Fatal(err)
 	}

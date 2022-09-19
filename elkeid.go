@@ -118,10 +118,8 @@ func receive() {
 		msgs, err := sub.Fetch(10, nats.MaxWait(30*time.Second))
 		if err != nil {
 			if errors.Is(err, nats.ErrTimeout) {
-				continue
 			}
 			ylog.Infof("nats", "fetch error: %v\n", err.Error())
-			continue
 		}
 
 		for _, msg := range msgs {
